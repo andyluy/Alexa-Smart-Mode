@@ -1,0 +1,76 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "pt-BR": {
+          "summary": "Proporciona uma experiência inteligente e personalizavel na comunicação",
+          "examplePhrases": [
+            "Alexa, abrir modo inteligente",
+            "Alexa, modo inteligente"
+          ],
+          "keywords": [
+            "IA",
+            "AI",
+            "inteligente",
+            "llm"
+          ],
+          "name": "Modo Inteligente",
+          "description": "A Alexa Skill \"Modo Inteligente\" permite que usuários interajam por voz com um avançado modelo de linguagem natural diretamente em seus dispositivos Alexa. Após ativar a skill, o usuário pode fazer perguntas, pedir explicações sobre tópicos diversos, receber sugestões, explorar conhecimentos gerais ou obter ajuda em tarefas do dia a dia usando comandos de voz. A Skill interpreta a mensagem do usuário e conecta você a uma Inteligência Artificial para fornecer respostas relevantes, claras e úteis em tempo real, tornando a experiência conversacional rápida e natural.\n\nExemplo de uso:\n\n“Alexa, quais são as últimas tendências em tecnologia na área de fusão nuclear e estime com base na taxa de progresso atual quando poderemos alcançar essa tecnologia para uso comercial.”\n\n“Alexa, Alexa explique a teoria da relatividade usando analogias e exemplos para que uma criança de 8 anos consiga entender.”\n\n“Alexa, me ajude com uma lista de dicas de estudo para aprender japonês de maneira eficiente.”\n\nFuncionalidades principais:\n\nInteração por voz natural com a Inteligência Artificial.\n\nSuporte a perguntas abertas, explicações e sugestões personalizadas.\n\nRespostas otimizadas para português e contexto local.\n\nNão requer cadastro ou dados pessoais para perguntas básicas.\n\nPrivacidade:\nEsta skill processa todas as informações seguindo os padrões de segurança e privacidade exigidos pela Amazon. Nenhum dado sensível é armazenado ou compartilhado fora do fluxo necessário para gerar respostas às perguntas do usuário.\n\nRequisitos:\n\nConta Amazon ativa e dispositivo Alexa compatível.\n\nConexão à internet.\n\nCaso precise obter informações adicionais, ajuda ou reportar problemas, consulte o menu de suporte disponível no app Alexa.",
+          "smallIconUri": "file://assets/images/pt-BR_smallIconUri.png",
+          "largeIconUri": "file://assets/images/pt-BR_largeIconUri.png"
+        }
+      },
+      "automaticDistribution": {
+        "isActive": false
+      },
+      "isAvailableWorldwide": false,
+      "testingInstructions": "{\"ask_dist_username\":\"\",\"ask_dist_password\":\"\",\"ask_dist_testing_instructions\":\"Sample Testing Instructions.\"}",
+      "category": "EDUCATION_AND_REFERENCE",
+      "distributionMode": "PUBLIC",
+      "distributionCountries": [
+        "BR"
+      ]
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:us-east-1:898937342174:function:ed2abd37-6a20-4086-b59c-f3f9e91b5007:Release_0"
+        },
+        "interfaces": [],
+        "locales": {},
+        "regions": {
+          "EU": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:eu-west-1:898937342174:function:ed2abd37-6a20-4086-b59c-f3f9e91b5007:Release_0"
+            }
+          },
+          "NA": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:us-east-1:898937342174:function:ed2abd37-6a20-4086-b59c-f3f9e91b5007:Release_0"
+            }
+          },
+          "FE": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:us-west-2:898937342174:function:ed2abd37-6a20-4086-b59c-f3f9e91b5007:Release_0"
+            }
+          }
+        }
+      }
+    },
+    "manifestVersion": "1.0",
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "locales": {
+        "pt-BR": {}
+      },
+      "containsAds": false,
+      "isExportCompliant": true,
+      "isChildDirected": false,
+      "shoppingKit": {
+        "isShoppingActionsEnabled": false,
+        "isAmazonAssociatesOnAlexaEnabled": false
+      },
+      "usesPersonalInfo": false
+    }
+  }
+}
