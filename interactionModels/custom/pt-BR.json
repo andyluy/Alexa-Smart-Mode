@@ -35,6 +35,23 @@
         {
           "name": "AMAZON.FallbackIntent",
           "samples": []
+        },
+        {
+          "slots": [
+            {
+              "name": "mensagem",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "name": "PerguntaLivreIntent",
+          "samples": [
+            "liste {mensagem}",
+            "quais {mensagem}",
+            "qual {mensagem}",
+            "como {mensagem}",
+            "me diga {mensagem}",
+            "pesquise {mensagem}"
+          ]
         }
       ],
       "types": [],

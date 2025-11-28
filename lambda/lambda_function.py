@@ -1,11 +1,54 @@
 # -*- coding: utf-8 -*-
 
 # This sample demonstrates handling intents from an Alexa skill using the Alexa Skills Kit SDK for Python.
-# Please visit https://alexa.design/cookbook for additional examples on implementing slots, dialog management,
+# Please visit [https://alexa.design/cookbook](https://alexa.design/cookbook) for additional examples on implementing slots, dialog management,
 # session persistence, api calls, and more.
 # This sample is built using the handler classes approach in skill builder.
+import requests  # Adicionado para fazer requisições HTTP à API da Perplexity
 import logging
 import ask_sdk_core.utils as ask_utils
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Carrega variáveis do arquivo .env
+
+API_KEY = os.getenv("API_KEY")  # Pega a chave da API Perplexity do ambiente
+url = "https://api.perplexity.ai/chat/completions" # Define o endpoint da Perplexity
+
+# === Inserção da função pedir à API Perplexity ===
+def perguntar_perplexity(mensagem_usuario):
+    """Envia a pergunta para a API da Perplexity e retorna a resposta da IA."""
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "model": "sonar",  # Ou experimente "sonar-medium-online" para respostas mais rápidas
+        "messages": [
+            {"role": "user", "content": mensagem_usuario}
+        ]
+    }
+    try:
+        # Timeout ajustado para não ultrapassar o limite da Alexa (8 seg)
+        response = requests.post(url, headers=headers, json=payload, timeout=7)
+        response.raise_for_status() # Garante que erros HTTP sejam tratados
+        resp_json = response.json()
+        resposta = resp_json["choices"][0]["message"]["content"]
+        # Sanitiza resposta para garantir que não é None ou string vazia
+        if not isinstance(resposta, str):
+            resposta = str(resposta)
+        resposta = resposta.strip().replace('\n', ' ')
+        # Limita resposta para evitar exceder tempo do speech da Alexa
+        if not resposta:
+            resposta = "Desculpe, não consegui encontrar uma resposta."
+        # Opcional: limita para X caracteres se desejar máxima agilidade
+        resposta = resposta[:120]
+        return resposta
+    except Exception as e:
+        logger.error(f"Erro na chamada à Perplexity: {e}", exc_info=True)
+        return "Desculpe, tive um problema para responder agora. Tente novamente."
+
+# === Fim da inserção ===
 
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
@@ -22,7 +65,6 @@ class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-
         return ask_utils.is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
@@ -163,6 +205,42 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
                 .ask(speak_output)
                 .response
         )
+        
+
+class PerplexityChatIntentHandler(AbstractRequestHandler):
+    """Handler para qualquer pergunta: manda para a Perplexity e retorna resposta"""
+
+    def can_handle(self, handler_input):
+        # Sempre trata IntentRequest, exceto intenções padrão (Help, Cancel etc)
+        intent_name = ask_utils.get_intent_name(handler_input)
+        default_intents = [
+            "AMAZON.HelpIntent", "AMAZON.CancelIntent", "AMAZON.StopIntent",
+            "AMAZON.FallbackIntent", "LaunchRequest", "CapturaNomeIntent"
+        ]
+        return ask_utils.is_request_type("IntentRequest")(handler_input) and intent_name not in default_intents
+
+    def handle(self, handler_input):
+        # Pega o texto da pergunta do usuário (em Alexa, normalmente via slot ou transcrição livre da intenção)
+        try:
+            # Tenta pegar texto via slot chamado 'mensagem'
+            mensagem_usuario = handler_input.request_envelope.request.intent.slots.get("mensagem").value
+        except Exception:
+            # Se não houver slot 'mensagem', tenta recuperar pelo nome da intenção ou uma fallback
+            mensagem_usuario = ask_utils.get_intent_name(handler_input)
+
+        # Chama a IA da Perplexity
+        resposta_ia = perguntar_perplexity(mensagem_usuario)
+        resposta_ia = resposta_ia[:50]
+
+        # Retorna resposta da IA ao usuário
+        return (
+            handler_input.response_builder
+                .speak(resposta_ia)
+                .ask("Se quiser perguntar outra coisa, pode falar.")
+                .response
+        )
+
+
 
 # The SkillBuilder object acts as the entry point for your skill, routing all request and response
 # payloads to the handlers above. Make sure any new handlers or interceptors you've
@@ -177,6 +255,7 @@ sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(FallbackIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())
+sb.add_request_handler(PerplexityChatIntentHandler())  # Adicionado para responder com Perplexity
 sb.add_request_handler(IntentReflectorHandler()) # make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers
 
 sb.add_exception_handler(CatchAllExceptionHandler())
