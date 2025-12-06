@@ -42,7 +42,7 @@ def perguntar_perplexity(mensagem_usuario):
         if not resposta:
             resposta = "Desculpe, não consegui encontrar uma resposta."
         # Opcional: limita para X caracteres se desejar máxima agilidade
-        resposta = resposta[:120]
+        resposta = resposta[:800]
         return resposta
     except Exception as e:
         logger.error(f"Erro na chamada à Perplexity: {e}", exc_info=True)
@@ -69,7 +69,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "Bem vindo ao modo inteligente. Qual é o seu nome?"
+        speak_output = "Bem vindo ao modo inteligente. A partir de agora, você pode começar suas perguntas ou pedidos com 'me' 'diga' e eu vou pensar com atenção para responder de forma inteligente."
 
         return (
             handler_input.response_builder
@@ -142,8 +142,8 @@ class FallbackIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
         logger.info("In FallbackIntentHandler")
-        speech = "Hmm, I'm not sure. You can say Hello or Help. What would you like to do?"
-        reprompt = "I didn't catch that. What can I help you with?"
+        speech = "Hmm, não consegui entender bem, poderia repetir a pergunta começando com me diga?"
+        reprompt = "Desculpe nao ouvi direito, podria repetir começando com me diga?"
 
         return handler_input.response_builder.speak(speech).ask(reprompt).response
 
@@ -197,7 +197,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
         # type: (HandlerInput, Exception) -> Response
         logger.error(exception, exc_info=True)
 
-        speak_output = "Sorry, I had trouble doing what you asked. Please try again."
+        speak_output = "Desculpa, eu tropecei nos fios aqui, pode tentar de novo ?"
 
         return (
             handler_input.response_builder
@@ -223,14 +223,14 @@ class PerplexityChatIntentHandler(AbstractRequestHandler):
         # Pega o texto da pergunta do usuário (em Alexa, normalmente via slot ou transcrição livre da intenção)
         try:
             # Tenta pegar texto via slot chamado 'mensagem'
-            mensagem_usuario = handler_input.request_envelope.request.intent.slots.get("mensagem").value
+            mensagem_usuario = handler_input.request_envelope.request.intent.slots.get("mensagem").value + "Responda apenas com texto simples, sem caracteres de markdown, sem referências ou citações. Mantenha a resposta clara e objetiva, com no máximo 600 caracteres, para que possa ser lida diretamente pela Alexa como resposta ao usuário"
         except Exception:
             # Se não houver slot 'mensagem', tenta recuperar pelo nome da intenção ou uma fallback
             mensagem_usuario = ask_utils.get_intent_name(handler_input)
 
         # Chama a IA da Perplexity
         resposta_ia = perguntar_perplexity(mensagem_usuario)
-        resposta_ia = resposta_ia[:50]
+        resposta_ia = resposta_ia[:800]
 
         # Retorna resposta da IA ao usuário
         return (
